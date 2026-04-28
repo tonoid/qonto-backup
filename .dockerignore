@@ -1,0 +1,13 @@
+node_modules
+dist
+backup
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+*.log
+.DS_Store
+test
+README.md
+LICENSE

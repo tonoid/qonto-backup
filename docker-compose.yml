@@ -1,0 +1,12 @@
+services:
+  qonto-backup:
+    image: ${QONTO_BACKUP_IMAGE:-ghcr.io/tonoid/qonto-backup:latest}
+    build: .
+    container_name: qonto-backup
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      BACKUP_DIR: /backup
+    volumes:
+      - ./backup:/backup

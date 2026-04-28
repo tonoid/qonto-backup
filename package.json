@@ -1,0 +1,23 @@
+{
+  "name": "qonto-backup",
+  "version": "0.1.0",
+  "description": "Sauvegarde quotidienne et incrémentale d'un compte Qonto (transactions + justificatifs) sur disque local.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "qonto-backup": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node --env-file=.env dist/index.js",
+    "test": "node --test --experimental-strip-types test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.0"
+  }
+}
