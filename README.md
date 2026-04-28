@@ -135,17 +135,17 @@ Exit codes :
 
 ## Image Docker prebuilt (GHCR)
 
-Multi-arch (`linux/amd64` + `linux/arm64`), publiée à chaque push sur `main` et chaque tag `v*` :
+Multi-arch (`linux/amd64` + `linux/arm64`), publiée **uniquement à chaque tag `v*`** (pas sur les commits main non-release — voir [Release automatisée](#release-automatisée-release-please)) :
 
 ```
-ghcr.io/tonoid/qonto-backup:latest         # tip de main
+ghcr.io/tonoid/qonto-backup:latest         # dernière release
 ghcr.io/tonoid/qonto-backup:vX.Y.Z         # release semver
 ghcr.io/tonoid/qonto-backup:X.Y            # minor pinning
 ghcr.io/tonoid/qonto-backup:X              # major pinning
-ghcr.io/tonoid/qonto-backup:sha-abcdef0    # commit pinning
+ghcr.io/tonoid/qonto-backup:sha-abcdef0    # commit pinning (commit du tag)
 ```
 
-Le workflow [`.github/workflows/docker.yml`](./.github/workflows/docker.yml) gère la publication. Aucune authentification requise pour `pull` (image publique).
+Le workflow [`.github/workflows/docker.yml`](./.github/workflows/docker.yml) gère la publication. Aucune authentification requise pour `pull` (image publique). `:latest` suit toujours la dernière release tagguée — jamais un commit `main` non-versionné.
 
 ## Release automatisée (release-please)
 
