@@ -1,17 +1,23 @@
-# qonto-backup — Sauvegarde Qonto auto-hébergée (transactions, justificatifs, PAdES probants)
+# Qonto Backup : Sauvegarde Qonto auto-hébergée (transactions, justificatifs, PAdES probants)
 
-> **En 1 phrase** — CLI open-source qui exporte chaque nuit l'intégralité de ton compte Qonto sur ton disque : transactions en JSON, justificatifs en PDF/image, version probante PAdES légalement opposable. Tourne en Docker sur Synology, Raspberry Pi ou n'importe quelle machine Linux. Incrémentale, idempotente, sans dépendance runtime.
+<p align="center">
+  <a href="https://tonoid.com/open-source/qonto-backup">
+    <img src="./assets/cover.jpg" alt="Qonto Backup, un projet open-source par tonoïd" width="720" />
+  </a>
+</p>
+
+> **En 1 phrase** : CLI open-source qui exporte chaque nuit l'intégralité de ton compte Qonto sur ton disque : transactions en JSON, justificatifs en PDF/image, version probante PAdES légalement opposable. Tourne en Docker sur Synology, Raspberry Pi ou n'importe quelle machine Linux. Incrémentale, idempotente, sans dépendance runtime.
 
 [![Image Docker](https://img.shields.io/badge/ghcr.io-tonoid%2Fqonto--backup-blue?logo=docker)](https://github.com/tonoid/qonto-backup/pkgs/container/qonto-backup)
 [![Licence MIT](https://img.shields.io/badge/Licence-MIT-green.svg)](./LICENSE)
 [![Node 22+](https://img.shields.io/badge/node-22%2B-brightgreen)](https://nodejs.org/)
 [![Build](https://github.com/tonoid/qonto-backup/actions/workflows/docker.yml/badge.svg)](https://github.com/tonoid/qonto-backup/actions/workflows/docker.yml)
 
-**Pour qui** — entrepreneurs, freelances, dirigeants de TPE/PME et experts-comptables qui veulent garder une copie locale de leurs données Qonto, conforme à l'obligation française de conservation de 10 ans (Code de commerce, art. L123-22).
+**Pour qui** : entrepreneurs, freelances, dirigeants de TPE/PME et experts-comptables qui veulent garder une copie locale de leurs données Qonto, conforme à l'obligation française de conservation de 10 ans (Code de commerce, art. L123-22).
 
-**Mots-clés** — sauvegarde Qonto, export Qonto API, backup justificatifs Qonto, archivage Qonto Synology, auto-hébergement compta, conservation pièces comptables 10 ans, FEC Qonto, contrôle fiscal Qonto, expert-comptable Qonto, PAdES probant, RGPD souveraineté données.
+**Mots-clés** : sauvegarde Qonto, export Qonto API, backup justificatifs Qonto, archivage Qonto Synology, auto-hébergement compta, conservation pièces comptables 10 ans, FEC Qonto, contrôle fiscal Qonto, expert-comptable Qonto, PAdES probant, RGPD souveraineté données.
 
-> ⚠️ **Disclaimer** — Le code de ce projet a été généré avec [Claude Code](https://claude.com/claude-code) (Anthropic), puis **testé et revu manuellement** par un humain. Il est fourni en l'état, sans garantie. Avant tout usage en production sur tes données comptables : lis le code (~1000 lignes), teste avec `--dry-run` puis `--since=YYYY-MM-DD` sur une fenêtre courte, et vérifie les fichiers produits. PRs et issues bienvenues.
+> ⚠️ **Disclaimer** : Le code de ce projet a été généré avec [Claude Code](https://claude.com/claude-code) (Anthropic), puis **testé et revu manuellement** par un humain. Il est fourni en l'état, sans garantie. Avant tout usage en production sur tes données comptables : lis le code (~1000 lignes), teste avec `--dry-run` puis `--since=YYYY-MM-DD` sur une fenêtre courte, et vérifie les fichiers produits. PRs et issues bienvenues.
 
 ---
 
@@ -19,11 +25,11 @@
 
 Qonto stocke tes transactions et tes justificatifs sur ses serveurs en Allemagne et en Irlande. Tant que ton abonnement est actif, tout va bien. Mais en France, plusieurs scénarios cassent ce confort :
 
-- **Conservation légale 10 ans** — l'article L123-22 du Code de commerce impose de conserver les pièces comptables pendant 10 ans. Si tu fermes ton compte Qonto avant cette échéance, l'accès aux archives devient compliqué.
-- **Contrôle fiscal ou URSSAF** — l'administration peut exiger les justificatifs sous 30 jours. Si Qonto a une panne ou si l'agent veut un format probant signé numériquement (PAdES), l'export manuel ne suffit pas.
-- **FEC (Fichier des Écritures Comptables)** — exigible à tout moment par la DGFIP. Avoir tes données en JSON Lines locales facilite la génération du FEC par ton expert-comptable.
-- **Changement de banque pro** — l'export manuel via l'application Qonto est limité (CSV uniquement, pas les pièces jointes en lot, pas la version probante).
-- **Souveraineté & RGPD** — tu reprends le contrôle de tes données comptables, sans dépendance à un prestataire tiers.
+- **Conservation légale 10 ans** : l'article L123-22 du Code de commerce impose de conserver les pièces comptables pendant 10 ans. Si tu fermes ton compte Qonto avant cette échéance, l'accès aux archives devient compliqué.
+- **Contrôle fiscal ou URSSAF** : l'administration peut exiger les justificatifs sous 30 jours. Si Qonto a une panne ou si l'agent veut un format probant signé numériquement (PAdES), l'export manuel ne suffit pas.
+- **FEC (Fichier des Écritures Comptables)** : exigible à tout moment par la DGFIP. Avoir tes données en JSON Lines locales facilite la génération du FEC par ton expert-comptable.
+- **Changement de banque pro** : l'export manuel via l'application Qonto est limité (CSV uniquement, pas les pièces jointes en lot, pas la version probante).
+- **Souveraineté & RGPD** : tu reprends le contrôle de tes données comptables, sans dépendance à un prestataire tiers.
 
 `qonto-backup` règle tout ça en **30 minutes de setup** : un cron quotidien sur ton NAS qui matérialise localement l'intégralité de ton compte Qonto, organisé par année / mois / jour, avec versions probantes PAdES.
 
@@ -31,16 +37,16 @@ Qonto stocke tes transactions et tes justificatifs sur ses serveurs en Allemagne
 
 ## Fonctionnalités
 
-- ✅ **Sauvegarde incrémentale** — un seul appel `updated_at_from` cursor par compte. Re-runs en quelques secondes.
-- ✅ **Multi-comptes** — gère tous les `bank_accounts` de ton organisation (compte courant, sous-comptes, comptes secondaires).
-- ✅ **Justificatifs** — chaque PJ téléchargée depuis le S3 présigné Qonto, en format original (PDF, JPG, PNG, HEIC, WebP, TIFF…).
-- ✅ **Version probante PAdES** — la variante signée légalement opposable est récupérée à côté de la PJ standard.
-- ✅ **Snapshots référentiels** — `organization.json`, `labels.json`, `beneficiaries.json` rafraîchis à chaque run.
-- ✅ **Idempotent** — un fichier déjà téléchargé est skipped. Crash en cours = reprise propre au run suivant.
-- ✅ **Zero runtime dependency** — `fetch` natif Node 22, `node:fs/promises`, rien d'autre. Pas de surface d'attaque supply-chain.
-- ✅ **Atomic writes** — tout passe par `*.tmp` + `rename`. Jamais de fichier corrompu, même en cas de coupure de courant.
-- ✅ **Docker multi-arch** — image `linux/amd64` + `linux/arm64` publiée sur GHCR à chaque release.
-- ✅ **MIT licensed** — fork-friendly, commercial-friendly.
+- ✅ **Sauvegarde incrémentale** : un seul appel `updated_at_from` cursor par compte. Re-runs en quelques secondes.
+- ✅ **Multi-comptes** : gère tous les `bank_accounts` de ton organisation (compte courant, sous-comptes, comptes secondaires).
+- ✅ **Justificatifs** : chaque PJ téléchargée depuis le S3 présigné Qonto, en format original (PDF, JPG, PNG, HEIC, WebP, TIFF…).
+- ✅ **Version probante PAdES** : la variante signée légalement opposable est récupérée à côté de la PJ standard.
+- ✅ **Snapshots référentiels** : `organization.json`, `labels.json`, `beneficiaries.json` rafraîchis à chaque run.
+- ✅ **Idempotent** : un fichier déjà téléchargé est skipped. Crash en cours = reprise propre au run suivant.
+- ✅ **Zero runtime dependency** : `fetch` natif Node 22, `node:fs/promises`, rien d'autre. Pas de surface d'attaque supply-chain.
+- ✅ **Atomic writes** : tout passe par `*.tmp` + `rename`. Jamais de fichier corrompu, même en cas de coupure de courant.
+- ✅ **Docker multi-arch** : image `linux/amd64` + `linux/arm64` publiée sur GHCR à chaque release.
+- ✅ **MIT licensed** : fork-friendly, commercial-friendly.
 
 ## Architecture de sortie
 
@@ -96,10 +102,10 @@ Voir [Déploiement Synology](#déploiement-synology--docker-recommandé-dsm-72) 
 
 ## Stack technique
 
-- **Node.js 22+** — fetch natif, `--env-file`, `node:test` runner, parser TS strip-types
-- **TypeScript 5.7+** strict — `rewriteRelativeImportExtensions`, `verbatimModuleSyntax`
-- **Zero runtime dependency** — uniquement devDeps `typescript` + `@types/node`
-- **Docker multi-stage** — image finale `node:22-alpine` non-root, ~150 MB
+- **Node.js 22+** : fetch natif, `--env-file`, `node:test` runner, parser TS strip-types
+- **TypeScript 5.7+** strict, avec `rewriteRelativeImportExtensions` et `verbatimModuleSyntax`
+- **Zero runtime dependency** : uniquement devDeps `typescript` + `@types/node`
+- **Docker multi-stage** : image finale `node:22-alpine` non-root, ~150 MB
 
 ## CLI
 
@@ -127,15 +133,15 @@ Exit codes :
 
 | Variable | Requise | Défaut | Description |
 |---|---|---|---|
-| `QONTO_LOGIN` | ✅ | — | Slug de l'organisation Qonto (`mon-orga-1234`) |
-| `QONTO_SECRET_KEY` | ✅ | — | Secret key générée dans Qonto |
+| `QONTO_LOGIN` | ✅ | *aucun* | Slug de l'organisation Qonto (`mon-orga-1234`) |
+| `QONTO_SECRET_KEY` | ✅ | *aucun* | Secret key générée dans Qonto |
 | `BACKUP_DIR` | ❌ | `./backup` | Dossier de sortie (en Docker : `/backup`) |
 | `QONTO_BASE_URL` | ❌ | `https://thirdparty.qonto.com/v2/` | Override pour tests |
 | `LOG_FORMAT` | ❌ | auto | `json` ou `pretty` (auto-détecte TTY) |
 
 ## Image Docker prebuilt (GHCR)
 
-Multi-arch (`linux/amd64` + `linux/arm64`), publiée **uniquement à chaque tag `v*`** (pas sur les commits main non-release — voir [Release automatisée](#release-automatisée-release-please)) :
+Multi-arch (`linux/amd64` + `linux/arm64`), publiée **uniquement à chaque tag `v*`** (pas sur les commits main non-release ; voir [Release automatisée](#release-automatisée-release-please)) :
 
 ```
 ghcr.io/tonoid/qonto-backup:latest         # dernière release
@@ -145,7 +151,7 @@ ghcr.io/tonoid/qonto-backup:X              # major pinning
 ghcr.io/tonoid/qonto-backup:sha-abcdef0    # commit pinning (commit du tag)
 ```
 
-Le workflow [`.github/workflows/docker.yml`](./.github/workflows/docker.yml) gère la publication. Aucune authentification requise pour `pull` (image publique). `:latest` suit toujours la dernière release tagguée — jamais un commit `main` non-versionné.
+Le workflow [`.github/workflows/docker.yml`](./.github/workflows/docker.yml) gère la publication. Aucune authentification requise pour `pull` (image publique). `:latest` suit toujours la dernière release tagguée, jamais un commit `main` non-versionné.
 
 ## Release automatisée (release-please)
 
@@ -173,14 +179,14 @@ Le versioning suit [Conventional Commits](https://www.conventionalcommits.org/) 
    - `ghcr.io/tonoid/qonto-backup:X`
    - `ghcr.io/tonoid/qonto-backup:latest`
 
-Une seule action manuelle dans tout le flow : merger la Release PR. Volontaire — c'est ton point de revue avant chaque release publique.
+Une seule action manuelle dans tout le flow : merger la Release PR. C'est volontaire : ton point de revue avant chaque release publique.
 
 ### Configuration
 
-- [`release-please-config.json`](./release-please-config.json) — `release-type: node`, sections du CHANGELOG, comportement pré-1.0
-- [`.release-please-manifest.json`](./.release-please-manifest.json) — version actuelle suivie par release-please
+- [`release-please-config.json`](./release-please-config.json) : `release-type: node`, sections du CHANGELOG, comportement pré-1.0
+- [`.release-please-manifest.json`](./.release-please-manifest.json) : version actuelle suivie par release-please
 
-## Déploiement Synology — Docker (recommandé DSM 7.2+)
+## Déploiement Synology : Docker (recommandé DSM 7.2+)
 
 L'approche la plus simple : pull l'image préconstruite, lance-la en cron via le Planificateur de tâches.
 
@@ -249,7 +255,7 @@ cd /volume1/docker/qonto-backup \
 
 Le `pull --quiet` met automatiquement à jour vers la dernière `:latest` avant chaque run. Pour figer une version, remplace `:latest` par `:v0.1.0` dans `docker-compose.yml`.
 
-Coche *Notifier par email en cas d'erreur* — DSM enverra un mail si l'exit code ≠ 0.
+Coche *Notifier par email en cas d'erreur* : DSM enverra un mail si l'exit code ≠ 0.
 
 ### 5. Vérifier
 
@@ -258,7 +264,7 @@ tail -f /var/log/qonto-backup.log
 # ou : Container Manager → conteneur qonto-backup → Journal
 ```
 
-## Déploiement Synology — Binaire Node
+## Déploiement Synology : Binaire Node
 
 Pré-requis : paquet *Node.js v22* installé via Package Center (ou via Entware).
 
@@ -358,7 +364,7 @@ Le format `transactions.jsonl` (1 ligne JSON par transaction) est trivial à tra
 
 ### Que se passe-t-il en cas de contrôle fiscal / URSSAF ?
 
-Tu as immédiatement accès à toutes tes pièces comptables, organisées chronologiquement (`{année}/{mois}/{jour}-{slug}-{id}.pdf`) — sans dépendre de l'app Qonto, de leur disponibilité, ni du temps de réponse de leur support. Les versions PAdES probantes sont stockées à côté pour tout ce qui exige une signature numérique opposable.
+Tu as immédiatement accès à toutes tes pièces comptables, organisées chronologiquement (`{année}/{mois}/{jour}-{slug}-{id}.pdf`) : sans dépendre de l'app Qonto, de leur disponibilité, ni du temps de réponse de leur support. Les versions PAdES probantes sont stockées à côté pour tout ce qui exige une signature numérique opposable.
 
 ### Est-ce que je peux faire confiance à un outil tiers avec ma clé API Qonto ?
 
@@ -410,9 +416,9 @@ Hors scope `qonto-backup` (déléguer à la couche stockage) :
 
 Pareil, hors scope. Pipe le dossier `backup/` dans :
 
-- **Hyper Backup** (Synology) — destination S3 / B2 / Scaleway / Wasabi
-- **`restic`** — chiffrement client-side, déduplication
-- **`rclone`** — réplique vers n'importe quel cloud
+- **Hyper Backup** (Synology) : destination S3 / B2 / Scaleway / Wasabi
+- **`restic`** : chiffrement client-side, déduplication
+- **`rclone`** : réplique vers n'importe quel cloud
 
 Tu obtiens du **3-2-1 backup** : 3 copies (Qonto + NAS + cloud), 2 médias différents, 1 hors-site.
 
@@ -448,10 +454,10 @@ Approximativement : **~1 Mo par justificatif** en moyenne (PDF de facture). Pour
 
 ## Ressources & projets liés
 
-- [Documentation officielle Qonto API](https://docs.qonto.com) — référence des endpoints utilisés.
-- [Article L123-22 du Code de commerce](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000019290657/) — obligation de conservation 10 ans.
-- [Norme PAdES ETSI EN 319 142](https://www.etsi.org/deliver/etsi_en/319100_319199/31914201/01.01.01_60/en_31914201v010101p.pdf) — signature numérique des PDF probants.
-- [tonoid/sens-marche](https://github.com/tonoid/sens-marche) — projet open-source sibling de l'écosystème tonoid.
+- [Documentation officielle Qonto API](https://docs.qonto.com) : référence des endpoints utilisés.
+- [Article L123-22 du Code de commerce](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000019290657/) : obligation de conservation 10 ans.
+- [Norme PAdES ETSI EN 319 142](https://www.etsi.org/deliver/etsi_en/319100_319199/31914201/01.01.01_60/en_31914201v010101p.pdf) : signature numérique des PDF probants.
+- [tonoid/sens-marche](https://github.com/tonoid/sens-marche) : projet open-source sibling de l'écosystème tonoid.
 
 ## Contribuer
 
@@ -467,9 +473,23 @@ npm run build
 
 Tu es expert-comptable et tu veux contribuer un script de génération FEC à partir du dossier `backup/` ? Ouvre une PR, c'est le genre d'apport qui aide toute la communauté.
 
+## À propos de tonoïd
+
+[tonoïd](https://tonoid.com) est le studio solo de [Simo Elalj](https://tonoid.com/about), basé en France. Le studio publie de petits logiciels indépendants, faits pour durer : pas d'investisseurs, pas de roadmap vitrine, pas de précipitation. Le nom vient du *tonneau à idées*, ce réflexe qu'on a tous de griffonner les bonnes idées sur un coin de serviette.
+
+Qonto Backup est l'un des projets open-source du studio, fourni gratuitement sous licence MIT pour les entrepreneurs et experts-comptables qui veulent garder la main sur leurs archives comptables.
+
+| Lien | URL |
+|---|---|
+| 🌐 Page projet (FR) | [tonoid.com/fr/open-source/qonto-backup](https://tonoid.com/fr/open-source/qonto-backup) |
+| 🌐 Page projet (EN) | [tonoid.com/open-source/qonto-backup](https://tonoid.com/open-source/qonto-backup) |
+| 💼 Tous les projets tonoïd | [tonoid.com/fr/projets](https://tonoid.com/fr/projets) |
+| 📬 Contact | hello@tonoid.com |
+| 🐙 GitHub | [github.com/tonoid](https://github.com/tonoid) |
+
 ## Licence
 
-[MIT](./LICENSE) — utilisable en commercial, fork-friendly. Projet maintenu par [tonoid](https://github.com/tonoid), une équipe basée en France.
+[MIT](./LICENSE) : utilisable en commercial, fork-friendly. Projet maintenu par [tonoïd](https://tonoid.com), une équipe basée en France.
 
 ---
 
