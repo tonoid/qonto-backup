@@ -93,11 +93,12 @@ export async function runSync(opts: SyncOptions): Promise<SyncSummary> {
         updated_at_from: accountResult.maxUpdatedAt ?? state.accounts[accountId]?.updated_at_from,
         last_sync_at: new Date().toISOString(),
       };
+      await txLog.flush();
+      await saveState(config.backupDir, state);
     }
   }
 
   await txLog.flush();
-  if (!dryRun) await saveState(config.backupDir, state);
 
   log.info("sync.done", { ...summary });
   return summary;

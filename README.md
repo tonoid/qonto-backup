@@ -11,6 +11,8 @@
 
 **Mots-clés** — sauvegarde Qonto, export Qonto API, backup justificatifs Qonto, archivage Qonto Synology, auto-hébergement compta, conservation pièces comptables 10 ans, FEC Qonto, contrôle fiscal Qonto, expert-comptable Qonto, PAdES probant, RGPD souveraineté données.
 
+> ⚠️ **Disclaimer** — Le code de ce projet a été généré avec [Claude Code](https://claude.com/claude-code) (Anthropic), puis **testé et revu manuellement** par un humain. Il est fourni en l'état, sans garantie. Avant tout usage en production sur tes données comptables : lis le code (~1000 lignes), teste avec `--dry-run` puis `--since=YYYY-MM-DD` sur une fenêtre courte, et vérifie les fichiers produits. PRs et issues bienvenues.
+
 ---
 
 ## Pourquoi ce projet ?
@@ -47,7 +49,7 @@ backup/
 ├── .state.json                                   # cursor sync incrémental par compte
 ├── organization.json                             # snapshot org + bank accounts + IBANs
 ├── labels.json                                   # référentiel labels
-├── beneficiaries.json                            # bénéficiaires SEPA + International
+├── beneficiaries.json                            # { beneficiaries: [...], international: [...] }
 └── 2026/
     └── 04/
         ├── transactions.jsonl                    # 1 ligne JSON par transaction du mois
@@ -144,6 +146,39 @@ ghcr.io/tonoid/qonto-backup:sha-abcdef0    # commit pinning
 ```
 
 Le workflow [`.github/workflows/docker.yml`](./.github/workflows/docker.yml) gère la publication. Aucune authentification requise pour `pull` (image publique).
+
+## Release automatisée (release-please)
+
+Le versioning suit [Conventional Commits](https://www.conventionalcommits.org/) et est entièrement piloté par les messages de commit :
+
+| Type de commit | Bump | Exemple |
+|---|---|---|
+| `feat: …` | minor (`1.0.0 → 1.1.0`) | `feat: add Slack notification on failure` |
+| `fix: …` | patch (`1.0.0 → 1.0.1`) | `fix: handle 410 on probative attachment` |
+| `feat!: …` ou `BREAKING CHANGE:` | major (`1.0.0 → 2.0.0`) | `feat!: drop Node 22 support` |
+| `docs:` `chore:` `refactor:` | aucun bump (intégré au CHANGELOG) | `docs: clarify Synology cron setup` |
+
+### Flow
+
+1. Tu pushes des commits sur `main` (en respectant le format conventional).
+2. Le workflow [`release-please.yml`](./.github/workflows/release-please.yml) ouvre (ou met à jour) automatiquement une **Release PR** qui :
+   - Bump `package.json` à la prochaine version semver appropriée
+   - Met à jour le `CHANGELOG.md` avec les nouveautés depuis la dernière release
+   - Met à jour `.release-please-manifest.json`
+3. Tu reviewes et **merge la Release PR**.
+4. release-please crée automatiquement le tag `vX.Y.Z` + une [GitHub Release](https://github.com/tonoid/qonto-backup/releases) avec les release notes.
+5. Le workflow `docker.yml` se déclenche sur le tag et publie sur GHCR :
+   - `ghcr.io/tonoid/qonto-backup:vX.Y.Z`
+   - `ghcr.io/tonoid/qonto-backup:X.Y`
+   - `ghcr.io/tonoid/qonto-backup:X`
+   - `ghcr.io/tonoid/qonto-backup:latest`
+
+Une seule action manuelle dans tout le flow : merger la Release PR. Volontaire — c'est ton point de revue avant chaque release publique.
+
+### Configuration
+
+- [`release-please-config.json`](./release-please-config.json) — `release-type: node`, sections du CHANGELOG, comportement pré-1.0
+- [`.release-please-manifest.json`](./.release-please-manifest.json) — version actuelle suivie par release-please
 
 ## Déploiement Synology — Docker (recommandé DSM 7.2+)
 
@@ -328,6 +363,8 @@ Tu as immédiatement accès à toutes tes pièces comptables, organisées chrono
 ### Est-ce que je peux faire confiance à un outil tiers avec ma clé API Qonto ?
 
 Code 100% open-source, MIT, ~1000 lignes lisibles en une heure. Aucune dépendance runtime → pas de risque supply-chain. La clé API ne quitte jamais ta machine : seuls appels sortants vers `thirdparty.qonto.com` (l'API officielle) et les URLs S3 présignées **fournies par Qonto eux-mêmes**.
+
+Le code a été **généré avec Claude Code (Anthropic) puis testé et revu manuellement par un humain** (cf. [Disclaimer](#qonto-backup--sauvegarde-qonto-auto-hébergée-transactions-justificatifs-pades-probants) en haut). C'est volontaire : la base de code reste petite et lisible précisément pour qu'une revue humaine reste praticable. Tu es encouragé·e à lire le code toi-même avant tout usage en production.
 
 ### Quelle est la consommation côté API Qonto ?
 
