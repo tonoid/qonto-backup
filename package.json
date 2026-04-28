@@ -1,6 +1,6 @@
 {
   "name": "qonto-backup",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Sauvegarde quotidienne et incrémentale d'un compte Qonto (transactions + justificatifs) sur disque local.",
   "license": "MIT",
   "type": "module",
